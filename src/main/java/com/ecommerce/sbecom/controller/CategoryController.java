@@ -1,69 +1,52 @@
 package com.ecommerce.sbecom.controller;
 
-import com.ecommerce.sbecom.model.Category;
+import com.ecommerce.sbecom.payload.CategoryDTO;
+import com.ecommerce.sbecom.payload.CategoryResponse;
 import com.ecommerce.sbecom.service.CategoryService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")
+@AllArgsConstructor
 public class CategoryController {
     private CategoryService categoryService;
 
-    @Autowired
-    public CategoryController(CategoryService categoryService) {
-        this.categoryService = categoryService;
-    }
-
 //    @GetMapping("/public/categories")
     @RequestMapping(value = "/public/categories", method = RequestMethod.GET) // Alternative
-    public ResponseEntity<List<Category>> getAllCategories() {
-        List<Category> categories = categoryService.getAllCategories();
+    public ResponseEntity<CategoryResponse> getAllCategories() {
+        CategoryResponse categoryResponse = categoryService.getAllCategories();
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(categories);
+                .body(categoryResponse);
     }
 
     @PostMapping("/admin/categories")
-    public ResponseEntity<String> createCategory(@RequestBody Category category) {
-        categoryService.createCategory(category);
+    public ResponseEntity<CategoryDTO> createCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
+        CategoryDTO createdCategoryDTO = categoryService.createCategory(categoryDTO);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body("Category: " + category.getCategoryName() + " : created");
+                .body(createdCategoryDTO);
     }
 
     @DeleteMapping("/admin/categories/{categoryId}")
-    public ResponseEntity<String> deleteCategory(@PathVariable Long categoryId) {
-        try {
-            categoryService.deleteCategory(categoryId);
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body("Category: " + categoryId + " : deleted");
+    public ResponseEntity<CategoryDTO> deleteCategory(@PathVariable Long categoryId) {
+        CategoryDTO deletedCategoryDTO = categoryService.deleteCategory(categoryId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(deletedCategoryDTO);
 //            return new ResponseEntity<>("Category: " + categoryId + " : deleted", HttpStatus.OK);
 //            return ResponseEntity.ok("Category: " + categoryId + " : deleted");
-        } catch (ResponseStatusException e) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(e.getReason());
-        }
     }
 
     @PutMapping("/admin/categories/{categoryId}")
-    public ResponseEntity<String> updateCategory(@PathVariable Long categoryId, @RequestBody Category category) {
-        try {
-            categoryService.updateCategory(categoryId, category);
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body("Category: " + categoryId + " : updated");
-        } catch (ResponseStatusException e) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(e.getReason());
-        }
+    public ResponseEntity<CategoryDTO> updateCategory(@PathVariable Long categoryId, @Valid @RequestBody CategoryDTO categoryDTO) {
+        CategoryDTO updatedCategoryDTO = categoryService.updateCategory(categoryId, categoryDTO);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(updatedCategoryDTO);
     }
 }
