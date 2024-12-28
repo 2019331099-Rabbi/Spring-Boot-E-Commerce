@@ -33,7 +33,7 @@ public class MyGlobalExceptionHandler {
     }
 
     @ExceptionHandler(APIException.class)
-    public ResponseEntity<String> myCategoryAlreadyExistsException(APIException ex) {
+    public ResponseEntity<String> myAPIException(APIException ex) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ex.getMessage());
