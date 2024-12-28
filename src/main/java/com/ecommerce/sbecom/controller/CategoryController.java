@@ -15,10 +15,19 @@ import org.springframework.web.bind.annotation.*;
 public class CategoryController {
     private CategoryService categoryService;
 
-//    @GetMapping("/public/categories")
-    @RequestMapping(value = "/public/categories", method = RequestMethod.GET) // Alternative
-    public ResponseEntity<CategoryResponse> getAllCategories() {
-        CategoryResponse categoryResponse = categoryService.getAllCategories();
+    @GetMapping("/echo")
+    public ResponseEntity<String> echoMessage(@RequestParam(name = "message", defaultValue = "Give echo message") String message) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body("Echoed message: " + message);
+    }
+
+    @GetMapping("/public/categories")
+    public ResponseEntity<CategoryResponse> getAllCategories(
+            @RequestParam(name = "pageNumber", defaultValue = "1") Integer pageNumber,
+            @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize
+    ) {
+        CategoryResponse categoryResponse = categoryService.getAllCategories(pageNumber, pageSize);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(categoryResponse);
@@ -38,8 +47,6 @@ public class CategoryController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(deletedCategoryDTO);
-//            return new ResponseEntity<>("Category: " + categoryId + " : deleted", HttpStatus.OK);
-//            return ResponseEntity.ok("Category: " + categoryId + " : deleted");
     }
 
     @PutMapping("/admin/categories/{categoryId}")

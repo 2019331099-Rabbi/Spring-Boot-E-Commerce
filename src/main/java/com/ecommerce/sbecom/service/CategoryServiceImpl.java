@@ -1,6 +1,5 @@
 package com.ecommerce.sbecom.service;
 
-import com.ecommerce.sbecom.config.AppConfig;
 import com.ecommerce.sbecom.exception.APIException;
 import com.ecommerce.sbecom.exception.ResourceNotFoundException;
 import com.ecommerce.sbecom.model.Category;
@@ -9,7 +8,9 @@ import com.ecommerce.sbecom.payload.CategoryResponse;
 import com.ecommerce.sbecom.repository.CategoryRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,14 +20,15 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
-    @Autowired
     private CategoryRepository categoryRepository;
-    @Autowired
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     @Override
-    public CategoryResponse getAllCategories() {
-        List<Category> categories = categoryRepository.findAll();
+    public CategoryResponse getAllCategories(Integer pageNumber, Integer pageSize) {
+        Pageable pageDetails = PageRequest.of(pageNumber, pageSize);
+        Page<Category> categoryPage = categoryRepository.findAll(pageDetails);
+        List<Category> categories = categoryPage.getContent();
+
         if (categories.isEmpty()) throw new APIException("No category is created till now");
 
         List<CategoryDTO> categoryDTOS = categories.stream()

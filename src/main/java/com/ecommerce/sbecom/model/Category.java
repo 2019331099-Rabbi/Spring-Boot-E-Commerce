@@ -20,6 +20,6 @@ public class Category {
 
     @Column(name = "category_name")
     @NotBlank
-    @Size(min = 2, max = 10, message = "Category name must be between 2 and 10 characters")
+    @Size(min = 2, max = 30, message = "Category name must be between 2 and 10 characters")
     private String categoryName;
 }
